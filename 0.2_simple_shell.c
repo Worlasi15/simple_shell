@@ -3,17 +3,14 @@
 /**
   * prom_comm - function that handles
   * prompt command
-  * @av: command line argument
-  * @env: environment variables
   */
-void prom_comm(char **av, char **env)
+void prom_comm(void)
 {
 	char *string = NULL;
 	size_t i = 0;
 	ssize_t character;
-	char *argv[Max_Command];
 
-	(void)av;
+	char *argv[BUFFER_SIZE];
 
 	while (1)
 	{
@@ -23,8 +20,7 @@ void prom_comm(char **av, char **env)
 
 		if (character == -1)
 		{
-			free(string);
-			string = NULL;
+			perror("getline");
 			exit(EXIT_FAILURE);
 		}
 
@@ -40,8 +36,10 @@ void prom_comm(char **av, char **env)
 			exec_exit();
 		}
 
-		comm_exec(argv, env);
+		comm_exec(argv);
 	}
+
+	free(string);
 }
 
 /**
@@ -52,10 +50,9 @@ void prom_comm(char **av, char **env)
   */
 char *path_finder(char *command)
 {
-	char *path = getenv("PATH");
-	char *dir = strtok(path, ": ");
-
 	char command_path[BUFFER_SIZE];
+	char *path = getenv("PATH");
+	char *dir = strtok(path, ":");
 	char *outcome = NULL;
 
 	if (command[0] == '/')
@@ -73,12 +70,17 @@ char *path_finder(char *command)
 				outcome = strdup(command_path);
 				break;
 			}
-
-			dir = strtok(NULL, ": ");
 		}
 
-		return (outcome);
+		dir = strtok(NULL, ": ");
 	}
+
+	if (outcome == NULL)
+	{
+		return (NULL);
+	}
+
+	return (outcome);
 }
 
 /**
@@ -91,27 +93,27 @@ char *path_finder(char *command)
 int get_p(const char *dir, const char *command,
 		char *command_path)
 {
-	size_t dir_len = strlen(dir);
-	size_t command_len = strlen(command);
+	size_t dir_len = strnlen(dir, BUFFER_SIZE);
+	size_t command_len = strnlen(command, BUFFER_SIZE);
+
+	size_t m = 0;
+	size_t k = 0;
 
 	if (dir_len + command_len + 2 <= BUFFER_SIZE)
 	{
-		size_t m = 0;
-
 		for (; m < dir_len; m++)
 		{
 			command_path[m] = dir[m];
 		}
 
 		command_path[m++] = '/';
-		size_t k = 0;
 
 		for (; k < command_len; k++, m++)
 		{
 			command_path[m] = command[k];
 		}
 
-		command_path[m + k] = '\0';
+		command_path[m] = '\0';
 		return (1);
 	}
 
@@ -126,12 +128,9 @@ int get_p(const char *dir, const char *command,
   * @env: environment variables
   * Return: 0 Always (success)
   */
-int main(int argc, char **argv, char **env)
+int main(void)
 {
-	(void)argc;
-	(void)argv;
-
-	prom_comm(argv, env);
+	prom_comm();
 
 	return (0);
 }

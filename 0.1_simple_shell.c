@@ -25,7 +25,7 @@ void prom_display(void)
 {
 	if (isatty(STDIN_FILENO))
 	{
-		write(STDOUT_FILENO, "simple_shell$", 15);
+		write(STDOUT_FILENO, "simple_shell$", 14);
 	}
 }
 
@@ -38,13 +38,16 @@ void prom_display(void)
 void token_izing(char *input, char **argv)
 {
 	int k = 0;
-	char *token = strtok(input, " ");
+	char *token;
+
+	token = strtok(input, " ");
 
 	while (token)
 	{
-		k++;
+		argv[k++] = strdup(token);
 		token = strtok(NULL, " ");
 	}
+
 	argv[k] = NULL;
 }
 
@@ -53,7 +56,7 @@ void token_izing(char *input, char **argv)
   * @argv: command line arguments
   * @env: environment variables
   */
-void comm_exec(char **argv, char *env[])
+void comm_exec(char **argv)
 {
 	pid_t child_pid;
 	int status;
@@ -73,7 +76,7 @@ void comm_exec(char **argv, char *env[])
 
 		if (command_path != NULL)
 		{
-			if (execve(command_path, argv, env) == -1)
+			if (execve(command_path, argv, NULL) == -1)
 			{
 				perror("execve");
 			}
