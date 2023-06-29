@@ -1,5 +1,6 @@
 #include "shell.h"
 
+
 /**
   * _strnlen - function that calculates
   * the length of a string
@@ -52,7 +53,7 @@ void token_izing(char *input, char **argv)
   * @argv: command line arguments
   * @env: environment variables
   */
-void comm_exec(char **argv, char *env)
+void comm_exec(char **argv, char *env[])
 {
 	pid_t child_pid;
 	int status;
@@ -82,7 +83,7 @@ void comm_exec(char **argv, char *env)
 		{
 			write(STDERR_FILENO, argv[0], _strnlen(argv[0]));
 			write(STDERR_FILENO, ": ", 2);
-			write(STDERR_FILENO, ERROR, _STRNLEN(ERROR));
+			write(STDERR_FILENO, error, _strnlen(error));
 			exit(EXIT_FAILURE);
 		}
 	}

@@ -15,8 +15,12 @@
 void print_sen(void);
 int _strnlen(char *v);
 void prom_display(void);
-void token_izing(char **input, char *argv);
-void comm_exec(char **argv, char *env);
+void token_izing(char *input, char **argv);
+void comm_exec(char **argv, char *env[]);
 void exec_exit(void);
+int main(int argc, char **argv, char **env);
+char *path_finder(char *command);
+void prom_comm(char **av, char **env);
+int get_p(const char *dir, const char *command, char *command_path);
 
 #endif
