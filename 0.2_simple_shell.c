@@ -100,15 +100,15 @@ int get_p(const char *dir, const char *command,
 
 		for (; m < dir_len; m++)
 		{
-			command_path[m] = command[m] = dir[m];
+			command_path[m] = dir[m];
 		}
 
 		command_path[m++] = '/';
 		size_t k = 0;
 
-		for (; k < command_len; k++)
+		for (; k < command_len; k++, m++)
 		{
-			command_path[m + k] = command[k];
+			command_path[m] = command[k];
 		}
 
 		command_path[m + k] = '\0';

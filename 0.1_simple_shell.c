@@ -69,7 +69,7 @@ void comm_exec(char **argv, char *env[])
 
 	if (child_pid == 0)
 	{
-		char *command_path = check_path(argv[0]);
+		char *command_path = path_finder(argv[0]);
 
 		if (command_path != NULL)
 		{
