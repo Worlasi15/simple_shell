@@ -13,5 +13,10 @@
 #define Max_Command 20
 
 void print_sen(void);
+int _strnlen(char *v);
+void prom_display(void);
+void token_izing(char **input, char *argv);
+void comm_exec(char **argv, char *env);
+void exec_exit(void);
 
 #endif
