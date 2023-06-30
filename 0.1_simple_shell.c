@@ -54,7 +54,6 @@ void token_izing(char *input, char **argv)
 /**
   * comm_exec - function thatexecutes command
   * @argv: command line arguments
-  * @env: environment variables
   */
 void comm_exec(char **argv)
 {

@@ -7,8 +7,9 @@
 void prom_comm(void)
 {
 	char *string = NULL;
-	size_t i = 0;
+	size_t i = BUFFER_SIZE;
 	ssize_t character;
+
 
 	char *argv[BUFFER_SIZE];
 
@@ -122,10 +123,6 @@ int get_p(const char *dir, const char *command,
 
 /**
   * main - entry point of the program
-  * @argc: the command line arguments
-  * @argv: array of string holding
-  * command line argument
-  * @env: environment variables
   * Return: 0 Always (success)
   */
 int main(void)
