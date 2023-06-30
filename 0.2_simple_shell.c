@@ -70,7 +70,7 @@ char *path_finder(char *command)
 	while (dir != NULL)
 	{
 		dir_len = _strnlen(dir);
-		command_path_len = dir_len + 2;
+		command_path_len = dir_len + _strnlen(command) + 2;
 
 		if (command_path_len > BUFFER_SIZE)
 		{
@@ -109,4 +109,25 @@ int main(void)
 	prom_comm();
 
 	return (0);
+}
+/**
+  * _strcpy - function that copies string
+  * @pds: pointer to the destination string
+  * @pcs: pointer to the source string
+  * of characters to copy
+  * Return: pointer to the destination string
+  */
+char *_strcpy(char *pds, const char *pcs)
+{
+	int i;
+
+	while (pcs[i] != '\0')
+	{
+		pds[i] = pcs[i];
+		i++;
+	}
+
+	pds[i] = '\0';
+
+	return (pds);
 }

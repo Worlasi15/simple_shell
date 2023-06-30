@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stddef.h>
+#include <stddef.h>
 
 #define BUFFER_SIZE 1024
 #define Max_Command 20
@@ -22,5 +23,6 @@ int main(void);
 char *path_finder(char *command);
 void prom_comm(void);
 int get_p(const char *dir, const char *command, char *command_path);
+char *_strcpy(char *pds, char *pcs, int i);
 
 #endif

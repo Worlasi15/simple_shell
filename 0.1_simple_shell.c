@@ -12,7 +12,9 @@ int _strnlen(char *v)
 	size_t lgth = 0;
 
 	while (*v++)
+	{
 		lgth++;
+	}
 
 	return (lgth);
 }
@@ -25,7 +27,7 @@ void prom_display(void)
 {
 	if (isatty(STDIN_FILENO))
 	{
-		write(STDOUT_FILENO, "simple_shell$", 14);
+		fputs("simple_shell$", stdout);
 	}
 }
 
@@ -37,15 +39,18 @@ void prom_display(void)
   */
 void token_izing(char *input, char **argv)
 {
-	int k = 0;
+	const char *delimiters = " ";
 	char *token;
+	int k = 0;
 
-	token = strtok(input, " ");
+	token = strtok(input, delimiters);
 
-	while (token)
+	while (token != NULL)
 	{
-		argv[k++] = strdup(token);
-		token = strtok(NULL, " ");
+		argv[k] = malloc(_strnlen(token) + 1);
+		_strcpy(argv[k], token);
+		k++;
+		token = strtok(NULL, delimiters);
 	}
 
 	argv[k] = NULL;
@@ -68,31 +73,26 @@ void comm_exec(char **argv)
 		perror("fork");
 		exit(EXIT_FAILURE);
 	}
-
-	if (child_pid == 0)
+	else if (child_pid == 0)
 	{
 		char *command_path = path_finder(argv[0]);
 
 		if (command_path != NULL)
 		{
-			if (execve(command_path, argv, NULL) == -1)
-			{
-				perror("execve");
-			}
-			free(command_path);
+			execvp(command_path, argv);
+			perror("execvp");
 		}
 		else
 		{
-			write(STDERR_FILENO, argv[0], _strnlen(argv[0]));
-			write(STDERR_FILENO, ": ", 2);
-			write(STDERR_FILENO, error, _strnlen(error));
+			fprintf(stderr, "%s: %s", argv[0], error);
 			exit(EXIT_FAILURE);
 		}
 	}
-
-	wait(&status);
+	else
+	{
+		waitpid(child_pid, &status, 0);
+	}
 }
-
 /**
   * exec_exit - function that executes the exit command
   */
