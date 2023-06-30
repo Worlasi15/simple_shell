@@ -51,11 +51,16 @@ void prom_comm(void)
   */
 char *path_finder(char *command)
 {
-	char command_path[BUFFER_SIZE];
 	char *path = getenv("PATH");
 	char *dir = strtok(path, ":");
 	char *outcome = NULL;
+	size_t dir_len, command_path_len;
+	char *command_path = NULL;
 
+	if (path == NULL)
+	{
+		return (NULL);
+	}
 	if (command[0] == '/')
 	{
 		if (access(command, X_OK) == 0)
@@ -64,61 +69,35 @@ char *path_finder(char *command)
 
 	while (dir != NULL)
 	{
-		if (get_p(dir, command, command_path))
+		dir_len = _strnlen(dir);
+		command_path_len = dir_len + 2;
+
+		if (command_path_len > BUFFER_SIZE)
 		{
-			if (access(command_path, X_OK) == 0)
-			{
-				outcome = strdup(command_path);
-				break;
-			}
+			return (NULL);
 		}
 
+		command_path = malloc(command_path_len);
+
+		if (command_path == NULL)
+		{
+			return (NULL);
+		}
+
+		snprintf(command_path, command_path_len, "%s/%s", dir, command);
+
+		if (access(command_path, X_OK) == 0)
+		{
+			outcome = (strdup(command_path));
+			break;
+		}
+
+		free(command_path);
 		dir = strtok(NULL, ": ");
 	}
 
-	if (outcome == NULL)
-	{
-		return (NULL);
-	}
-
+	free(command_path);
 	return (outcome);
-}
-
-/**
-  * get_p - get command path
-  * @dir: directory gotten from path
-  * @command: command
-  * @command_path: stores command path
-  * Return: 1 else 0
-  */
-int get_p(const char *dir, const char *command,
-		char *command_path)
-{
-	size_t dir_len = strnlen(dir, BUFFER_SIZE);
-	size_t command_len = strnlen(command, BUFFER_SIZE);
-
-	size_t m = 0;
-	size_t k = 0;
-
-	if (dir_len + command_len + 2 <= BUFFER_SIZE)
-	{
-		for (; m < dir_len; m++)
-		{
-			command_path[m] = dir[m];
-		}
-
-		command_path[m++] = '/';
-
-		for (; k < command_len; k++, m++)
-		{
-			command_path[m] = command[k];
-		}
-
-		command_path[m] = '\0';
-		return (1);
-	}
-
-	return (0);
 }
 
 /**
