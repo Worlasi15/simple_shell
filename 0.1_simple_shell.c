@@ -48,7 +48,7 @@ void token_izing(char *input, char **argv)
 	while (token != NULL)
 	{
 		argv[k] = malloc(_strnlen(token) + 1);
-		_strcpy(argv[k], token);
+		strcpy(argv[k], token);
 		k++;
 		token = strtok(NULL, delimiters);
 	}

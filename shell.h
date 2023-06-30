@@ -23,6 +23,6 @@ int main(void);
 char *path_finder(char *command);
 void prom_comm(void);
 int get_p(const char *dir, const char *command, char *command_path);
-char *_strcpy(char *pds, char *pcs, int i);
+/*char *_strcpy(char *pds, char *pcs, int i);*/
 
 #endif
