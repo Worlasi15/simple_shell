@@ -11,18 +11,20 @@
 #include <stddef.h>
 
 #define BUFFER_SIZE 1024
-#define Max_Command 20
+#define Max_Command 200
 
 void print_sen(void);
 int _strnlen(char *v);
 void prom_display(void);
-void token_izing(char *input, char **argv);
-void comm_exec(char **argv);
+void token_izing(char *input, char **args);
+void comm_exec(char **args);
 void exec_exit(void);
 int main(void);
-char *path_finder(char *command);
+void path_finder(char **args);
 void prom_comm(void);
 int get_p(const char *dir, const char *command, char *command_path);
+void free_memory(char** args);
+void Env_print(void);
 /*char *_strcpy(char *pds, char *pcs, int i);*/
 
 #endif

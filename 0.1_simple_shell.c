@@ -20,79 +20,59 @@ int _strnlen(char *v)
 }
 
 /**
-  * prom_display - function that displays prompt
-  *
-  */
-void prom_display(void)
-{
-	if (isatty(STDIN_FILENO))
-	{
-		fputs("simple_shell$", stdout);
-	}
-}
-
-/**
   * token_izing - function that tokenizes
   * string input
   * @input: string input to be tokenized
-  * @argv: array to store tokens
+  * @args: array to store tokens
   */
-void token_izing(char *input, char **argv)
+void token_izing(char *input, char **args)
 {
-	const char *delimiters = " ";
+	int f = 0;
 	char *token;
-	int k = 0;
 
-	token = strtok(input, delimiters);
+	token = strtok(input, " ");
 
-	while (token != NULL)
+	while (token != NULL && f < Max_Command - 1)
 	{
-		argv[k] = malloc(_strnlen(token) + 1);
-		strcpy(argv[k], token);
-		k++;
-		token = strtok(NULL, delimiters);
+		args[f++] = strdup(token);
+		token = strtok(NULL, " ");
 	}
-
-	argv[k] = NULL;
+	args[f] = NULL;
 }
 
 /**
   * comm_exec - function thatexecutes command
-  * @argv: command line arguments
+  * @args: command line arguments
   */
-void comm_exec(char **argv)
+void comm_exec(char **args)
 {
-	pid_t child_pid;
-	int status;
-	char error[] = "No such file or directory\n";
+    pid_t child = fork();
+    if (child == -1)
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    else if (child == 0)
+    {
+        path_finder(args);
 
-	child_pid = fork();
-
-	if (child_pid == -1)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
-	else if (child_pid == 0)
-	{
-		char *command_path = path_finder(argv[0]);
-
-		if (command_path != NULL)
-		{
-			execvp(command_path, argv);
-			perror("execvp");
-		}
-		else
-		{
-			fprintf(stderr, "%s: %s", argv[0], error);
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		waitpid(child_pid, &status, 0);
-	}
+        if (execve(args[0], args, NULL) == -1)
+        {
+            perror("execve");
+            exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+        int status;
+        if (waitpid(child, &status, 0) == -1)
+        {
+            perror("waitpid");
+            exit(EXIT_FAILURE);
+        }
+    }
 }
+
 /**
   * exec_exit - function that executes the exit command
   */

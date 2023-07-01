@@ -6,41 +6,86 @@
   */
 void prom_comm(void)
 {
-	char *string = NULL;
-	size_t i = BUFFER_SIZE;
-	ssize_t character;
+	char *input = NULL;
+    size_t n = 0;
+    ssize_t input_received;
+    char *args[Max_Command];
+    int i;
 
 
-	char *argv[BUFFER_SIZE];
-
-	while (1)
+    while (1)
+    {
+        if (isatty(STDIN_FILENO))
 	{
-		prom_display();
+            write(STDOUT_FILENO, "Simple shell$ ", 14);
+        }
 
-		character = getline(&string, &i, stdin);
+        input_received = getline(&input, &n, stdin);
 
-		if (character == -1)
+        if (input_received == -1)
+	{
+            if (isatty(STDIN_FILENO))
+	    {
+                perror("Error");
+            }
+            break;
+        }
+
+
+        input[strcspn(input, "\n")] = '\0';
+
+        token_izing(input, args);
+
+
+       if (strcmp(args[0], "exit") == 0)
 		{
-			perror("getline");
-			exit(EXIT_FAILURE);
+			for (i = 0; args[i] != NULL; i++)
+			{
+				free(args[i]);
+			}
+			free(input);
+			exit(0);
+		}
+	   else if (strcmp(args[0], "env") == 0)
+	    {
+                Env_print();
+            }
+	    else
+	    {
+                comm_exec(args);
+            }
+	    for (i = 0; args[i] != NULL; i++)
+		{
+			free(args[i]);
 		}
 
-		if (string[character - 1] == '\n')
-		{
-			string[character - 1] = '\0';
-		}
+    }
 
-		token_izing(string, argv);
+    free(input);
+}
 
-		if (strcmp(argv[0], "exit") == 0)
-		{
-			exec_exit();
-		}
+void free_memory(char **args)
+{
+	int i;
 
-		comm_exec(argv);
-	}
+    for (i = 0;  args[i] != NULL; i++) {
+        free(args[i]);
+    }
+    free(args);
+}
 
-	free(string);
+void Env_print()
+{
+	extern char **environ;
+
+   char ** environment_ptr = environ;
+
+    while (*environment_ptr != NULL)
+    {
+        write(STDOUT_FILENO, *environment_ptr, strlen(*environment_ptr));
+        write(STDOUT_FILENO, "\n", 1);
+        environment_ptr++;
+    }
 }
 
 /**
@@ -49,55 +94,32 @@ void prom_comm(void)
   * @command: command whose path is to be checked
   * Return: the path to the command, else NULL
   */
-char *path_finder(char *command)
+void path_finder(char **args)
 {
-	char *path = getenv("PATH");
-	char *dir = strtok(path, ":");
-	char *outcome = NULL;
-	size_t dir_len, command_path_len;
-	char *command_path = NULL;
+    char *path, *token, *path_copy, command[Max_Command];
 
-	if (path == NULL)
+	if (args[0][0] != '/')
 	{
-		return (NULL);
-	}
-	if (command[0] == '/')
-	{
-		if (access(command, X_OK) == 0)
-			return (strdup(command));
-	}
-
-	while (dir != NULL)
-	{
-		dir_len = _strnlen(dir);
-		command_path_len = dir_len + _strnlen(command) + 2;
-
-		if (command_path_len > BUFFER_SIZE)
+		path = getenv("PATH");
+		if (path != NULL)
 		{
-			return (NULL);
+			path_copy = strdup(path);
+			token = strtok(path_copy, ":");
+			while (token != NULL)
+			{
+				snprintf(command, sizeof(command), "%s/%s", token, args[0]);
+					if (access(command, X_OK) == 0)
+					{
+						free(args[0]);
+						args[0] = strdup(command);
+						free(path_copy);
+						return;
+					}
+				token = strtok(NULL, ":");
+			}
+			free(path_copy);
 		}
-
-		command_path = malloc(command_path_len);
-
-		if (command_path == NULL)
-		{
-			return (NULL);
-		}
-
-		snprintf(command_path, command_path_len, "%s/%s", dir, command);
-
-		if (access(command_path, X_OK) == 0)
-		{
-			outcome = (strdup(command_path));
-			break;
-		}
-
-		free(command_path);
-		dir = strtok(NULL, ": ");
 	}
-
-	free(command_path);
-	return (outcome);
 }
 
 /**
