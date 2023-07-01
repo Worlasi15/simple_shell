@@ -1,6 +1,6 @@
 #include "shell.h"
 
-char* my_getline()
+char *my_getline()
 {
     static char* buffer = NULL;
     static size_t buffer_size = 0;
@@ -34,7 +34,7 @@ char* my_getline()
     }
 
     if (c == EOF && i == 0) {
-        return NULL;
+        return (" ");
     }
 
     buffer[i] = '\0';

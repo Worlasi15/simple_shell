@@ -17,6 +17,7 @@ void print_sen(void);
 int _strnlen(char *v);
 void prom_display(void);
 void token_izing(char *input, char **args);
+char * my_getline();
 void comm_exec(char **args);
 void exec_exit(void);
 int main(void);

@@ -78,5 +78,17 @@ void comm_exec(char **args)
   */
 void exec_exit(void)
 {
-	exit(EXIT_SUCCESS);
+	int status;
+	char **args = 0;
+
+if (args[1] == NULL)
+{
+
+        exit(0);
+    }
+else if (args[2] == NULL)
+{
+        status = atoi(args[1]);
+        exit(status);
+    }
 }

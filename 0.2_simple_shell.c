@@ -7,8 +7,8 @@
 void prom_comm(void)
 {
 	char *input = NULL;
-    size_t n = 0;
-    ssize_t input_received;
+    /*size_t n = 0;*/
+    char *input_received = NULL;
     char *args[Max_Command];
     int i;
 
@@ -20,9 +20,9 @@ void prom_comm(void)
             write(STDOUT_FILENO, "Simple shell$ ", 14);
         }
 
-        input_received = getline(&input, &n, stdin);
+        input_received = my_getline();
 
-        if (input_received == -1)
+        if (input_received == NULL)
 	{
             if (isatty(STDIN_FILENO))
 	    {
@@ -96,30 +96,45 @@ void Env_print()
   */
 void path_finder(char **args)
 {
-    char *path, *token, *path_copy, command[Max_Command];
+    char *env_path, *dir_token, *path_copy = NULL, cmd_path[Max_Command];
 
-	if (args[0][0] != '/')
-	{
-		path = getenv("PATH");
-		if (path != NULL)
-		{
-			path_copy = strdup(path);
-			token = strtok(path_copy, ":");
-			while (token != NULL)
-			{
-				snprintf(command, sizeof(command), "%s/%s", token, args[0]);
-					if (access(command, X_OK) == 0)
-					{
-						free(args[0]);
-						args[0] = strdup(command);
-						free(path_copy);
-						return;
-					}
-				token = strtok(NULL, ":");
-			}
-			free(path_copy);
-		}
-	}
+    if (args == NULL || args[0] == NULL || args[0][0] == '/')
+    {
+        return;
+    }
+
+    env_path = getenv("PATH");
+    if (env_path == NULL)
+    {
+        return;
+    }
+
+    path_copy = strdup(env_path);
+    if (path_copy == NULL)
+    {
+        return;
+    }
+
+    dir_token = strtok(path_copy, ":");
+    while (dir_token != NULL)
+    {
+        snprintf(cmd_path, sizeof(cmd_path), "%s/%s", dir_token, args[0]);
+        if (access(cmd_path, X_OK) == 0)
+        {
+            free(args[0]);
+            args[0] = strdup(cmd_path);
+            if (args[0] == NULL)
+            {
+                free(path_copy);
+                return;
+            }
+            free(path_copy);
+            return;
+        }
+        dir_token = strtok(NULL, ":");
+    }
+
+    free(path_copy);
 }
 
 /**
