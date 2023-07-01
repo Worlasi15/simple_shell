@@ -7,8 +7,8 @@
 void prom_comm(void)
 {
 	char *input = NULL;
-    /*size_t n = 0;*/
-    char *input_received = NULL;
+    size_t n = 0;
+    ssize_t input_received;
     char *args[Max_Command];
     int i;
 
@@ -20,9 +20,9 @@ void prom_comm(void)
             write(STDOUT_FILENO, "Simple shell$ ", 14);
         }
 
-        input_received = my_getline();
+        input_received = getline(&input, &n, stdin);
 
-        if (input_received == NULL)
+        if (input_received == -1)
 	{
             if (isatty(STDIN_FILENO))
 	    {

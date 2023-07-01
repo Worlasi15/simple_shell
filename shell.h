@@ -19,7 +19,7 @@ void prom_display(void);
 void token_izing(char *input, char **args);
 char * my_getline();
 void comm_exec(char **args);
-void exec_exit(void);
+void exec_exit(char *arg);
 int main(void);
 void path_finder(char **args);
 void prom_comm(void);

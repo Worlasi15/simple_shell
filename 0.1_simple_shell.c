@@ -75,20 +75,17 @@ void comm_exec(char **args)
 
 /**
   * exec_exit - function that executes the exit command
+  * @arg: argument count
   */
-void exec_exit(void)
-{
-	int status;
-	char **args = 0;
 
-if (args[1] == NULL)
+void exec_exit( char *arg)
+{
+int  status;
+
+if (arg[0] == '\0')
 {
 
-        exit(0);
-    }
-else if (args[2] == NULL)
-{
-        status = atoi(args[1]);
-        exit(status);
-    }
+      status = atoi(arg);
+	}
+	exit(status);
 }
